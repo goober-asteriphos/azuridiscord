@@ -1,8 +1,8 @@
 # Use official lightweight Node.js 22 LTS on Alpine Linux
 FROM node:22-alpine
 
-# Install FFmpeg for stream audio processing
-RUN apk add --no-cache ffmpeg
+# Install FFmpeg and runtime compatibility for audio and native modules
+RUN apk add --no-cache ffmpeg libc6-compat
 
 # Set working directory
 WORKDIR /app
