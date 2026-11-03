@@ -91,6 +91,11 @@ class GuildAudioSession {
       adapterCreator: voiceChannel.guild.voiceAdapterCreator,
       selfDeaf: true,
       selfMute: false,
+      debug: true,
+    });
+
+    this.connection.on('debug', (message) => {
+      console.log(`[Voice Debug ${this.guildId}]: ${message}`);
     });
 
     this.connection.on('stateChange', (oldState, newState) => {
@@ -120,7 +125,7 @@ class GuildAudioSession {
     });
 
     try {
-      await entersState(this.connection, VoiceConnectionStatus.Ready, 20_000);
+      await entersState(this.connection, VoiceConnectionStatus.Ready, 30_000);
       this.connection.subscribe(this.player);
       return this.connection;
     } catch (err) {
