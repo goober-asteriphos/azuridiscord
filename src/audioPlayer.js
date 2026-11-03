@@ -35,7 +35,7 @@ class GuildAudioSession {
     this.currentStation = null;
     this.voiceChannel = null;
     this.textChannel = null;
-    this.volume = 1.0;
+    this.volume = (config.behavior.defaultVolume ?? 25) / 100;
     this.leaveTimeout = null;
     this.isStopping = false;
 

@@ -100,7 +100,8 @@ module.exports = {
         .setDescription(targetStation.description || 'Broadcasting live from AzuraCast')
         .addFields(
           { name: '🎵 Current Track', value: currentSong, inline: false },
-          { name: '🔊 Voice Channel', value: `${voiceChannel.name}`, inline: true },
+          { name: '🔊 Channel', value: `${voiceChannel.name}`, inline: true },
+          { name: '🔉 Volume', value: `${Math.round(session.volume * 100)}%`, inline: true },
           { name: '👥 Listeners', value: `${listeners}`, inline: true }
         )
         .setFooter({ text: 'Powered by AzuraCast & Discord.js' })

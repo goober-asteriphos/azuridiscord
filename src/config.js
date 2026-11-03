@@ -15,6 +15,7 @@ const config = {
 
   // Bot Behavior
   behavior: {
+    defaultVolume: parseInt(process.env.DEFAULT_VOLUME || '25', 10), // default 25% to protect ears
     autoLeaveEmptyVC: process.env.AUTO_LEAVE_EMPTY_VC !== 'false', // default true
     autoLeaveTimeoutSeconds: parseInt(process.env.AUTO_LEAVE_TIMEOUT || '30', 10),
     updatePresenceIntervalSeconds: parseInt(process.env.PRESENCE_INTERVAL || '30', 10),
