@@ -62,7 +62,7 @@ class GuildAudioSession {
                 console.error(`[AudioPlayer ${this.guildId}] Auto-reconnect failed:`, err);
               });
             }
-          }, 2000);
+          }, 1000);
         }
       }
     });
@@ -153,10 +153,10 @@ class GuildAudioSession {
     this.killFFmpeg();
 
     // Spawn FFmpeg to pull HTTP/HTTPS stream and pipe as raw 48kHz 16-bit stereo PCM
-    // -icy 0 prevents in-band metadata chunks from interrupting the audio stream
-    // -nobuffer and low_delay prevent buffer burst jumps
+    // Reconnection flags handle stream hiccups and EOF on track transitions
     const args = [
       '-reconnect', '1',
+      '-reconnect_at_eof', '1',
       '-reconnect_streamed', '1',
       '-reconnect_delay_max', '2',
       '-fflags', '+nobuffer',
@@ -164,7 +164,6 @@ class GuildAudioSession {
       '-probesize', '32768',
       '-analyzeduration', '0',
       '-err_detect', 'ignore_err',
-      '-icy', '0',
       '-i', streamUrl,
       '-loglevel', 'warning',
       '-f', 's16le',
@@ -174,7 +173,12 @@ class GuildAudioSession {
     ];
 
     this.ffmpegProcess = spawn(ffmpegPath, args, {
-      stdio: ['ignore', 'pipe', 'ignore'],
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    this.ffmpegProcess.stderr.on('data', (d) => {
+      const msg = d.toString().trim();
+      if (msg) console.warn(`[FFmpeg stderr ${this.guildId}]: ${msg}`);
     });
 
     this.ffmpegProcess.on('error', (err) => {
