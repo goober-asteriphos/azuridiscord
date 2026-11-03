@@ -10,7 +10,7 @@ const config = {
   azuracast: {
     baseUrl: (process.env.AZURACAST_BASE_URL || '').replace(/\/+$/, ''), // strip trailing slash
     apiKey: process.env.AZURACAST_API_KEY || null, // Optional for public stations
-    defaultStation: process.env.DEFAULT_STATION || null, // Shortcode or ID
+    defaultStation: process.env.DEFAULT_STATION || '8', // Shortcode or numeric ID (defaults to station 8)
   },
 
   // Bot Behavior

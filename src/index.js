@@ -53,27 +53,47 @@ client.once(Events.ClientReady, (readyClient) => {
 });
 
 /**
- * Dynamically updates the bot status / activity
+ * Dynamically updates the bot status / Rich Presence with currently playing track
  */
 async function updateBotPresence() {
   if (!client.user) return;
 
-  // Find if there's any active playback session
-  let activeSession = null;
+  // 1. Check if there's an active voice session streaming
+  let activeStation = null;
   for (const [, session] of sessionManager.sessions) {
     if (session.isPlaying() && session.currentStation) {
-      activeSession = session;
+      activeStation = session.currentStation;
       break;
     }
   }
 
+  // 2. Fall back to the main selected station (e.g. station 8)
+  const targetStationIdentifier = activeStation ? activeStation.id : (config.azuracast.defaultStation || '8');
+
   try {
-    if (activeSession && activeSession.currentStation) {
-      const np = await azuracast.getNowPlaying(activeSession.currentStation.id);
-      const songTitle = np?.now_playing?.song?.text || activeSession.currentStation.name;
+    const np = await azuracast.getNowPlaying(targetStationIdentifier);
+    // If nowplaying returns an array (when queried without specific id), find the matching station
+    const npData = Array.isArray(np)
+      ? (np.find(s => String(s.station?.id) === String(targetStationIdentifier) || s.station?.shortcode === String(targetStationIdentifier)) || np[0])
+      : np;
+
+    if (npData && npData.now_playing?.song) {
+      const songText = npData.now_playing.song.text || `${npData.now_playing.song.title} - ${npData.now_playing.song.artist}`;
+      const stationName = npData.station?.name || activeStation?.name || 'Radio';
+      const isLive = npData.live?.is_live;
+      const streamerName = npData.live?.streamer_name;
+
+      let activityText = '';
+      if (isLive && streamerName) {
+        activityText = `🎙️ ${streamerName}: ${songText}`;
+      } else {
+        activityText = `${songText}`;
+      }
+
+      // Discord presence activity name limit is 128 characters
       client.user.setPresence({
         activities: [{
-          name: `${activeSession.currentStation.name}: ${songTitle}`,
+          name: activityText.slice(0, 128),
           type: ActivityType.Listening,
         }],
         status: 'online',
