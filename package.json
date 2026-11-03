@@ -1,0 +1,30 @@
+{
+  "name": "discord-azuracast-bot",
+  "version": "1.0.0",
+  "description": "Discord Bot that streams radio stations from an AzuraCast instance into voice channels",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "register": "node src/deploy-commands.js"
+  },
+  "keywords": [
+    "discord",
+    "azuracast",
+    "bot",
+    "radio",
+    "stream"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@discordjs/voice": "^0.18.0",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5",
+    "ffmpeg-static": "^5.2.0",
+    "libsodium-wrappers": "^0.7.15",
+    "opusscript": "^0.1.1",
+    "axios": "^1.7.9"
+  }
+}
