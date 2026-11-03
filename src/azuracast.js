@@ -1,5 +1,10 @@
 const axios = require('axios');
+const http = require('http');
+const https = require('https');
 const { config } = require('./config');
+
+const httpAgent = new http.Agent({ keepAlive: true, maxSockets: 5 });
+const httpsAgent = new https.Agent({ keepAlive: true, maxSockets: 5 });
 
 class AzuraCastClient {
   constructor() {
@@ -8,6 +13,12 @@ class AzuraCastClient {
     this.cachedStations = null;
     this.lastStationsFetch = 0;
     this.cacheTTL = 30 * 1000; // 30 seconds
+
+    this.client = axios.create({
+      httpAgent,
+      httpsAgent,
+      timeout: 6000,
+    });
   }
 
   getHeaders() {
@@ -33,9 +44,8 @@ class AzuraCastClient {
     }
 
     try {
-      const response = await axios.get(`${this.baseUrl}/api/stations`, {
+      const response = await this.client.get(`${this.baseUrl}/api/stations`, {
         headers: this.getHeaders(),
-        timeout: 8000,
       });
 
       this.cachedStations = response.data;
@@ -115,9 +125,8 @@ class AzuraCastClient {
         ? `${this.baseUrl}/api/nowplaying/${stationIdOrShortcode}`
         : `${this.baseUrl}/api/nowplaying`;
 
-      const response = await axios.get(url, {
+      const response = await this.client.get(url, {
         headers: this.getHeaders(),
-        timeout: 6000,
       });
 
       return response.data;

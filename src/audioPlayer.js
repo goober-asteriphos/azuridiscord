@@ -153,15 +153,19 @@ class GuildAudioSession {
     this.killFFmpeg();
 
     // Spawn FFmpeg to pull HTTP/HTTPS stream and pipe as raw 48kHz 16-bit stereo PCM
-    // Reconnection flags handle brief network drops/stalls
+    // -icy 0 prevents in-band metadata chunks from interrupting the audio stream
+    // -nobuffer and low_delay prevent buffer burst jumps
     const args = [
       '-reconnect', '1',
-      '-reconnect_at_eof', '1',
       '-reconnect_streamed', '1',
-      '-reconnect_delay_max', '5',
-      '-err_detect', 'ignore_err',
-      '-i', streamUrl,
+      '-reconnect_delay_max', '2',
+      '-fflags', '+nobuffer',
+      '-flags', 'low_delay',
+      '-probesize', '32768',
       '-analyzeduration', '0',
+      '-err_detect', 'ignore_err',
+      '-icy', '0',
+      '-i', streamUrl,
       '-loglevel', 'warning',
       '-f', 's16le',
       '-ar', '48000',

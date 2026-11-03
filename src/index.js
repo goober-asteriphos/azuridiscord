@@ -52,6 +52,8 @@ client.once(Events.ClientReady, (readyClient) => {
   setInterval(updateBotPresence, config.behavior.updatePresenceIntervalSeconds * 1000);
 });
 
+let currentPresenceText = '';
+
 /**
  * Dynamically updates the bot status / Rich Presence with currently playing track
  */
@@ -77,31 +79,29 @@ async function updateBotPresence() {
       ? (np.find(s => String(s.station?.id) === String(targetStationIdentifier) || s.station?.shortcode === String(targetStationIdentifier)) || np[0])
       : np;
 
+    let activityText = '/play | AzuraCast Radio';
+
     if (npData && npData.now_playing?.song) {
       const songText = npData.now_playing.song.text || `${npData.now_playing.song.title} - ${npData.now_playing.song.artist}`;
-      const stationName = npData.station?.name || activeStation?.name || 'Radio';
       const isLive = npData.live?.is_live;
       const streamerName = npData.live?.streamer_name;
 
-      let activityText = '';
       if (isLive && streamerName) {
         activityText = `🎙️ ${streamerName}: ${songText}`;
       } else {
         activityText = `${songText}`;
       }
+    }
 
-      // Discord presence activity name limit is 128 characters
+    const trimmedActivity = activityText.slice(0, 128);
+
+    // CRITICAL: Only notify Discord Gateway if the song/activity actually CHANGED!
+    // Spamming setPresence every interval causes Gateway packet storms that hitch audio playback.
+    if (trimmedActivity !== currentPresenceText) {
+      currentPresenceText = trimmedActivity;
       client.user.setPresence({
         activities: [{
-          name: activityText.slice(0, 128),
-          type: ActivityType.Listening,
-        }],
-        status: 'online',
-      });
-    } else {
-      client.user.setPresence({
-        activities: [{
-          name: '/play | AzuraCast Radio',
+          name: trimmedActivity,
           type: ActivityType.Listening,
         }],
         status: 'online',
