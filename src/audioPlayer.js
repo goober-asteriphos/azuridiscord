@@ -93,6 +93,14 @@ class GuildAudioSession {
       selfMute: false,
     });
 
+    this.connection.on('stateChange', (oldState, newState) => {
+      console.log(`[VoiceConnection ${this.guildId}] State: ${oldState.status} -> ${newState.status}`);
+    });
+
+    this.connection.on('error', (error) => {
+      console.error(`[VoiceConnection Error ${this.guildId}]:`, error.message);
+    });
+
     this.connection.on(VoiceConnectionStatus.Disconnected, async () => {
       try {
         await Promise.race([

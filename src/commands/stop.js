@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const { sessionManager } = require('../audioPlayer');
 
 module.exports = {
@@ -12,7 +12,7 @@ module.exports = {
     if (!session || !session.connection) {
       return interaction.reply({
         content: 'ℹ️ The bot is not currently connected to any voice channel.',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -20,7 +20,7 @@ module.exports = {
     if (!memberVoice || memberVoice.id !== session.voiceChannel?.id) {
       return interaction.reply({
         content: '❌ You must be in the same voice channel as the bot to stop playback.',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 

@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: azuracast-discord-bot
     restart: unless-stopped
+    network_mode: "host"
     env_file:
       - .env
     logging:

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
 const azuracast = require('../azuracast');
 const { sessionManager } = require('../audioPlayer');
 const { config } = require('../config');
@@ -50,7 +50,7 @@ module.exports = {
     if (!voiceChannel) {
       return interaction.reply({
         content: '❌ You must be in a voice channel to use this command!',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -58,7 +58,7 @@ module.exports = {
     if (!permissions.has('Connect') || !permissions.has('Speak')) {
       return interaction.reply({
         content: '❌ I do not have permission to join and speak in your voice channel!',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 

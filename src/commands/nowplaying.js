@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
 const azuracast = require('../azuracast');
 const { sessionManager } = require('../audioPlayer');
 
@@ -30,7 +30,7 @@ module.exports = {
     if (!session || !session.currentStation) {
       return interaction.reply({
         content: 'ℹ️ No station is currently playing in this server. Use `/play` to start streaming!',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 

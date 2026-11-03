@@ -10,6 +10,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  MessageFlags,
 } = require('discord.js');
 const { config, validateConfig } = require('./config');
 const azuracast = require('./azuracast');
@@ -120,7 +121,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       console.error(`[Command Error ${interaction.commandName}]:`, error);
       const response = {
         content: '⚠️ There was an error while executing this command!',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       };
       if (interaction.replied || interaction.deferred) {
         await interaction.followUp(response);
@@ -140,7 +141,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       if (!memberVoice) {
         return interaction.reply({
           content: '❌ You must join a voice channel first before choosing a station!',
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -201,7 +202,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (interaction.customId === 'btn_stop') {
       if (!session || !session.connection) {
-        return interaction.reply({ content: 'ℹ️ Bot is not currently in voice.', ephemeral: true });
+        return interaction.reply({ content: 'ℹ️ Bot is not currently in voice.', flags: MessageFlags.Ephemeral });
       }
       session.destroy();
       return interaction.reply({ content: '⏹️ Playback stopped and left voice channel.' });
@@ -209,14 +210,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (interaction.customId === 'btn_toggle_pause') {
       if (!session || !session.player) {
-        return interaction.reply({ content: 'ℹ️ No active playback to pause.', ephemeral: true });
+        return interaction.reply({ content: 'ℹ️ No active playback to pause.', flags: MessageFlags.Ephemeral });
       }
       if (session.isPaused()) {
         session.unpause();
-        return interaction.reply({ content: '▶️ Resumed stream playback.', ephemeral: true });
+        return interaction.reply({ content: '▶️ Resumed stream playback.', flags: MessageFlags.Ephemeral });
       } else {
         session.pause();
-        return interaction.reply({ content: '⏸️ Paused stream playback.', ephemeral: true });
+        return interaction.reply({ content: '⏸️ Paused stream playback.', flags: MessageFlags.Ephemeral });
       }
     }
 
